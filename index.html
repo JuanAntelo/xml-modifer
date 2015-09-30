@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html ng-app="config">
+<head>
+	<link rel="stylesheet" type="text/css" href="bootstrap.css"></link>
+	<script type="text/javascript" src="angular.min.js"></script>
+	<script type="text/javascript" src="superagent.min.js"></script>
+	<script type="text/javascript">
+	angular.module('config',[])
+	.controller('formlist',function($scope,formStore) {
+		superagent.get('/forms').end(function(err,res) {
+			$scope.forms = res.body;
+			$scope.$apply();
+			formStore.addForms(res.body);
+		})
+		$scope.testfunc = function(param) {
+			// use a cache to store data between pages
+			window.location.href = "/formdetail.html";
+		};
+	})
+	.service('formStore',function() {
+		var api = {};
+		var _forms = [];
+		var _index; 
+		api.addForms = function(formsArray) {
+			forms = formsArray;
+		};
+		api.getForms = function() {
+			return forms;
+		};
+		return api;
+	});
+	</script>
+</head>
+<body>
+<div class="header center">
+	<h3>Form Configuration File Modification</h3>
+	<h5>Select a Form to edit</h5>
+</div>
+<div class="main center" ng-controller="formlist">
+	<ul class="list-group main">
+  		<li class="list-group-item" ng-repeat="form in forms">
+  			<a ng-click="testfunc(form.index)";>{{form.name}}</a>
+  		</li>
+	</ul>
+</div>
+</body>
+</html>
+
+<style type="text/css">
+	.main {
+		width : 450px;
+		margin-top: 20px;
+	}
+	.center {
+		margin: 0 auto;
+		text-align: center;
+	}
+</style>
