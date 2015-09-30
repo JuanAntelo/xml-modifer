@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html ng-app="config">
+<head>
+	<link rel="stylesheet" type="text/css" href="bootstrap.css"></link>
+	<script type="text/javascript" src="angular.min.js"></script>
+	<script type="text/javascript" src="superagent.min.js"></script>
+	<script type="text/javascript">
+	angular.module('config',[])
+	.controller('attributeController',function($scope) {
+		superagent.get('/forms/0').end(function(err,res) {
+			$scope.data = res.body;
+			attributes($scope.data);
+			$scope.$apply();
+		});
+
+		function attributes(data) {
+			for (var i = 0; i <  data.length; i++) {
+				var keys = Object.keys(data[i].$);
+				for (var j = 0; j < keys.length; j++) {
+					if(keys[j] === "id")
+						continue;
+					data[i][keys[j]] = data[i].$[keys[j]]
+				};
+			};
+		};
+	})
+	</script>
+</head>
+<body>
+<div class="header center">
+	<h3>Simple Form</h3>
+	<h5>Here are the attributes for the form</h5>
+</div>
+<div class="main center" ng-controller="attributeController">
+	<div class="panel panel-default" ng-repeat="attr in data">
+		<div class="panel-heading">{{attr.$.id}}</div>
+		<div class="panel-body">
+			<p ng-repeat="(key,value) in attr"><span style="float: left;">{{key}} - {{value}}</span><button class="btn btn-primary">Edit</button></p>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+
+<style type="text/css">
+	.main {
+		width : 450px;
+		margin-top: 20px;
+	}
+	.center {
+		margin: 0 auto;
+		text-align: center;
+	}
+</style>
